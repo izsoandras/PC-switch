@@ -35,6 +35,7 @@ void turnOn();
 void initSPIFFS();
 void initOTA();
 void getPcState();
+void kill();
 bool handleReadFile(String fileName);
 void setup(){
     //start serial
@@ -115,6 +116,7 @@ void setupServer(){
     server.on("/hddstate", HTTP_GET, getHddState);
     server.on("/turnon", HTTP_POST, turnOn);
     server.on("/reset", HTTP_POST, reset);
+    server.on("/kill", HTTP_POST, kill);
     
     server.onNotFound(handleNotFound);
     //start server
@@ -191,6 +193,19 @@ void reset(){
     digitalWrite(PC_RST, HIGH);
     delay(500);
     digitalWrite(PC_RST, LOW);
+    
+    delay(2000);
+    sendPcState();
+}
+
+void kill(){
+    if(!server.authenticate(username, userpwd))
+        return server.send(401, "text/plain", "Unauthorized");
+
+    Serial.println("Turn on request");
+    digitalWrite(PC_PWR, HIGH);
+    delay(4000);
+    digitalWrite(PC_PWR, LOW);
     
     delay(2000);
     sendPcState();

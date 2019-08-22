@@ -4,6 +4,7 @@ function onLoad(){
     document.getElementById("btnTurnon").addEventListener("click", onTurnonClick);
     document.getElementById("btnReset").addEventListener("click", onResetClick);
     document.getElementById("btnRefresh").addEventListener("click", onRefreshClick);
+    document.getElementById("btnKill").addEventListener("click", onKillClick);
 
     document.getElementById("pcState").innerHTML = "Unknown";
     document.getElementById("pcState").style.color = "gray";
@@ -97,5 +98,13 @@ function onResetClick(){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange == onGetPcState;
     xhttp.open("POST", "reset", true);
+    xhttp.send();
+}
+
+function onKillClick(){
+    console.log("Kill button pressed");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange == onGetPcState;
+    xhttp.open("POST", "kill", true);
     xhttp.send();
 }
