@@ -3,29 +3,30 @@
 #include<ESP8266WebServer.h>
 #include<FS.h>
 #include<ArduinoOTA.h>
+#include "secrets.h"
 
 //D1 = rerset
 #define PC_RST 5
 //D8 = power
 #define PC_PWR 15
 //D5 = power LED
-#define PC_PWR_LED 14
-//D4 = HDD LED
-#define PC_HDD_LED 2
+#define PC_PWR_LED 12
+//D2 = HDD LED
+#define PC_HDD_LED 4
 
 //SSID of the WiFi network to connect to
-const char* ssid = "1601-rotacioskappa_p";
+const char* ssid = SECRET_SSID;
 //Password of the WiFi network to connect to
-const char* password = "16Konyharuha01";
+const char* wifi_pwd = SECRET_WIFIPASS;
 //mDNS address
 const char* dns = "pcswitch";//.local
 
 //authentication data for the web server
-const char* username = "seedow";
-const char* userpwd = "turnon";
+const char* username = SECRET_WEBUSER;
+const char* userpwd = SECRET_WEBPASS;
 //authentication for OTA
-const char* ota_user = "pcswitch_ota";
-const char* ota_pwd = "secretpwdOta123";
+const char* ota_user = SECRET_OTAUSER;
+const char* ota_pwd = SECRET_OTAPASS;
 //server instance
 ESP8266WebServer server(80);
 
@@ -40,6 +41,7 @@ bool handleReadFile(String fileName);
 void setup(){
     //start serial
     Serial.begin(115200);
+    Serial.println("Hello");
     //put ESP to station mode
     WiFi.mode(WIFI_STA);
     //print MAC address
@@ -48,7 +50,7 @@ void setup(){
     //init the file system
     initSPIFFS();
     //connect to the WiFi network
-    WiFi.begin(ssid, password);
+    WiFi.begin(ssid, wifi_pwd);
     connectWiFi();
     //start mDNS server
     if(!MDNS.begin(dns))
@@ -72,6 +74,10 @@ void setup(){
 void loop(){
     ArduinoOTA.handle();
     server.handleClient();
+    if(WiFi.status() == WL_CONNECT_FAILED || WiFi.status() == WL_CONNECTION_LOST   || WiFi.status() == WL_DISCONNECTED || WiFi.status() == WL_NO_SSID_AVAIL){
+      Serial.println("Connection lost");
+      connectWiFi();
+    }
 }
 
 void initSPIFFS(){
@@ -140,7 +146,7 @@ bool handleReadFile(String fileName){
 void sendPcState(){
     Serial.print("PC state: ");
     Serial.println(digitalRead(PC_PWR_LED));
-    if(digitalRead(PC_PWR_LED) == HIGH)
+    if(digitalRead(PC_PWR_LED) == LOW)
         server.send(200, "text/plain", "On");
         
     else
