@@ -3,9 +3,10 @@ Simple gadget to turn on my PC remotely. I could have used my motherboards Wake 
 
 A webserver is running on the ESP8266 with a very simple REST API. After authentication the client side offers a few buttons. These buttons send http requests to the proper URI address, and the ESP performs the required action.
 The available options:
-- **Turn on:** imitates the pressing of the power button
-- **Reset:** imitates the pressing of the reset button
+- **Turn on:** imitates the pressing of the power button for 500ms 
+- **Reset:** imitates the pressing of the reset button for 500ms
 - **Refresh:** asks the server for the current state of the PC (does not work at this time)
+- **Kill:** shuts down the PC. The same as turn on but for 4s
 
 The webpage also displays the current state of the PC.
 
